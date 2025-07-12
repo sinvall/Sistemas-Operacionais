@@ -4,20 +4,12 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-/**
- * Esta classe implementa uma lista baseada em ArrayList que é segura para uso
- * concorrente por múltiplas threads (thread-safe).
- *
- * Ela utiliza um ReadWriteLock para otimizar o desempenho, permitindo que
- * múltiplas threads leiam a lista simultaneamente, enquanto garante que as
- * operações de escrita (add, remove) sejam exclusivas.
- */
 public class ThreadSafeArrayList<E> {
 
-    // A lista interna que vamos proteger. É o nosso "recurso compartilhado".
+   
     private final List<E> list = new ArrayList<>();
 
-    // O nosso sistema inteligente de travas (locks).
+    
     private final ReadWriteLock rwLock = new ReentrantReadWriteLock();
     private final Lock readLock = rwLock.readLock();
     private final Lock writeLock = rwLock.writeLock();
@@ -34,8 +26,7 @@ public class ThreadSafeArrayList<E> {
             // Seção Crítica: Apenas uma thread pode estar aqui por vez.
             list.add(element);
         } finally {
-            // É CRUCIAL liberar a trava no bloco finally para garantir que,
-            // mesmo em caso de erro, a trava seja liberada.
+
             writeLock.unlock();
         }
     }
@@ -47,11 +38,11 @@ public class ThreadSafeArrayList<E> {
      * @return O elemento que foi removido.
      */
     public E remove(int index) {
-        writeLock.lock(); // Adquire a trava de escrita.
+        writeLock.lock(); 
         try {
             return list.remove(index);
         } finally {
-            writeLock.unlock(); // Libera a trava de escrita.
+            writeLock.unlock(); 
         }
     }
 
@@ -63,12 +54,12 @@ public class ThreadSafeArrayList<E> {
      * @return O elemento na posição especificada.
      */
     public E get(int index) {
-        readLock.lock(); // Adquire a trava de leitura.
+        readLock.lock(); 
         try {
-            // Múltiplas threads podem estar lendo aqui ao mesmo tempo.
+            
             return list.get(index);
         } finally {
-            readLock.unlock(); // Libera a trava de leitura.
+            readLock.unlock(); 
         }
     }
 
@@ -78,11 +69,11 @@ public class ThreadSafeArrayList<E> {
      * @return o tamanho da lista.
      */
     public int size() {
-        readLock.lock(); // Adquire a trava de leitura.
+        readLock.lock(); 
         try {
             return list.size();
         } finally {
-            readLock.unlock(); // Libera a trava de leitura.
+            readLock.unlock(); 
         }
     }
 }
